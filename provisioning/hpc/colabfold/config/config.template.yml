@@ -1,0 +1,65 @@
+Region: us-east-1
+Image:
+  Os: ubuntu2004
+HeadNode:
+  InstanceType: c5.xlarge
+  Networking:
+    SubnetId: ${PUBLIC_SUBNET}
+    ElasticIp: true
+  Iam:
+    S3Access:
+      - BucketName: ${BUCKET_NAME}
+        EnableWriteAccess: true
+    AdditionalIamPolicies:
+      - Policy: arn:aws:iam::aws:policy/SecretsManagerReadWrite
+      - Policy: arn:aws:iam::aws:policy/AmazonFSxFullAccess
+      - Policy: arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+  Ssh:
+    KeyName: ${SSH_KEY_NAME}
+  CustomActions:
+    OnNodeConfigured:
+      Script: ${POST_INSTALL_SCRIPT_LOCATION}
+      Args:
+        - ${FSX_NAME}
+        - ${BUCKET_NAME}
+
+Scheduling:
+  Scheduler: slurm
+  SlurmSettings:
+    Database:
+      Uri: ${PCLUSTER_RDS_HOST}:${PCLUSTER_RDS_PORT}
+      UserName: ${PCLUSTER_RDS_USER}
+      PasswordSecretArn: ${AURORA_PASSWORD_ARN}
+  SlurmQueues:
+    - Name: queue-cpu
+      ComputeResources:
+        - Name: x2iedn16xlarge
+          InstanceType: x2iedn.16xlarge
+          MinCount: 0
+          MaxCount: 10
+      Networking:
+        SubnetIds:
+          - ${PRIVATE_SUBNET}
+      Iam:
+        AdditionalIamPolicies:
+          - Policy: arn:aws:iam::aws:policy/AmazonSNSFullAccess
+    - Name: queue-gpu
+      ComputeResources:
+        - Name: g54xlarge
+          InstanceType: g5.4xlarge
+          MinCount: 0
+          MaxCount: 10
+      Networking:
+        SubnetIds:
+          - ${PRIVATE_SUBNET}
+      Iam:
+        AdditionalIamPolicies:
+          - Policy: arn:aws:iam::aws:policy/AmazonSNSFullAccess
+
+SharedStorage:
+  # Fsx for Lustreの設定
+  - MountDir: /fsx
+    Name: shared-storage-lustre
+    StorageType: FsxLustre
+    FsxLustreSettings:
+      FileSystemId: ${FSX_NAME}
