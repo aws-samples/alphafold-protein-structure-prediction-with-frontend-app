@@ -2,6 +2,10 @@
 
 View this page in [English](README.md)
 
+AlphaFold2 service on AWS は、ユーザが GUI でAlphaFold2 や ColabFold を実行できるようなウェブアプリ環境を提供します。また、管理者は AlphaFold2 や ColabFold の解析環境を AWS CDK を用いて簡単に構築することができます。
+
+<img src="doc/webui.png" width=500>
+
 <img src="doc/architecture.png" width=500>
 
 ## 開発環境の前提条件
@@ -184,4 +188,3 @@ squeue
   - 値は `xxxyyyzzz.cloudfront.net` のような形式です。
 - フロントエンドの画面か、ジョブの投入・ジョブ一覧の表示・ジョブの中止・ジョブの結果表示が行えます。
 
-<img src="doc/webui.png" width=500>

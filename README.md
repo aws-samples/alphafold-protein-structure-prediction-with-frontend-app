@@ -1,6 +1,10 @@
-# AlphaFold2 Service
+# AlphaFold2 Service on AWS 
 
 View this page in [Japanese(日本語)](README_ja.md)
+
+AlphaFold2 Service on AWS provides a web frontend that allows users to run AlphaFold2 or ColabFold using GUI. In addition, administrators can easily build an AlphaFold2 or ColabFold analysis environment with AWS CDK.
+
+<img src="doc/webui.png" width=500>
 
 <img src="doc/architecture.png" width=500>
 
@@ -16,6 +20,7 @@ View this page in [Japanese(日本語)](README_ja.md)
 ## Set up your development environment using AWS Cloud9
 
 **NOTE**: We recommend you create your AWS Cloud9 environment in `us-east-1` (N. Virginia) region.
+
 **NOTE**: If you are going to create an AWS Cloud9 environment using the following commands, the prerequisites above (e.g. AWS CLI / Python / Node.js / Docker) are pre-configured at Cloud9.
 
 1. Launch [AWS CloudShell](https://docs.aws.amazon.com/cloudshell/latest/userguide/welcome.html) and run the following command.
@@ -44,6 +49,7 @@ cd alphafold-protein-structure-prediction-with-frontend-app/
 ## Deploy the application
 
 **NOTE**: The following command uses `us-east-1` (N. Virginia) region.
+
 **NOTE**: We recommend that you use the Cloud9 environment for the following steps.
 
 ### 1. Backend
@@ -235,4 +241,3 @@ Output:
   - It looks like `xxxyyyzzz.cloudfront.net`.
 - From the frontend, you can submit a job, list recent jobs, cancel a job, and visualize the result of the job.
 
-<img src="doc/webui.png" width=500>
