@@ -1,8 +1,8 @@
-# AlphaFold2 Service
+# AlphaFold2 Webapp on AWS
 
 View this page in [English](README.md)
 
-AlphaFold2 service on AWS は、ユーザが GUI でAlphaFold2 や ColabFold を実行できるようなウェブアプリ環境を提供します。また、管理者は AlphaFold2 や ColabFold の解析環境を AWS CDK を用いて簡単に構築することができます。
+AlphaFold2 Webapp on AWS は、ユーザが GUI でAlphaFold2 や ColabFold を実行できるようなウェブアプリ環境を提供します。また、管理者は AlphaFold2 や ColabFold の解析環境を AWS CDK を用いて簡単に構築することができます。
 
 <img src="doc/webui.png" width=500>
 
