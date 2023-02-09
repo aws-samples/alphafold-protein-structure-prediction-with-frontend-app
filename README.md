@@ -1,8 +1,8 @@
-# AlphaFold2 Service on AWS 
+# AlphaFold2 Webapp on AWS
 
 View this page in [Japanese(日本語)](README_ja.md)
 
-AlphaFold2 Service on AWS provides a web frontend that allows users to run AlphaFold2 or ColabFold using GUI. In addition, administrators can easily build an AlphaFold2 or ColabFold analysis environment with AWS CDK.
+AlphaFold2 Webapp on AWS provides a web frontend that allows users to run AlphaFold2 or ColabFold using GUI. In addition, administrators can easily build an AlphaFold2 or ColabFold analysis environment with AWS CDK.
 
 <img src="doc/webui.png" width=500>
 
@@ -79,7 +79,7 @@ Alphafold2ServiceStack.GetSSHKeyCommand = aws ssm get-parameter --name /ec2/keyp
 ```
 
 - From the outputs above, copy the value of Alphafold2ServiceStack.GetSSHKeyCommand `aws ssm get-parameter ...` and enter it to Cloud9 terminal. 
-  - This command fetches the private key and save it to Cloud9.
+  - This command fetches the private key and saves it to Cloud9.
 
 ```sh
 aws ssm get-parameter --name /ec2/keypair/key-{your key ID} --region us-east-1 --with-decryption --query Parameter.Value --output text > ~/.ssh/keypair-alphafold2.pem
@@ -90,7 +90,7 @@ chmod 600 ~/.ssh/keypair-alphafold2.pem
 ### 2. Set up a cluster managed by AWS ParallelCluster
 
 - Now that the backend has been built, the next step is to create clusters for protein structure prediction.
-- In the terminal of Cloud9 IDE, enter the following. 
+- In the Cloud9 IDE terminal, enter the following. 
 
 **NOTE**: The following includes commands for both AlphaFold2 and ColabFold. Choose one that you prefer.
 
@@ -113,7 +113,7 @@ pcluster create-cluster --cluster-name hpccluster --cluster-configuration provis
 pcluster create-cluster --cluster-name hpccluster --cluster-configuration provisioning/hpc/alphafold2/config/config.yml
 ```
 
-- You can check the cluster creation status from the following command.
+- You can check the cluster creation status using the following command.
 
 ```sh
 pcluster list-clusters
@@ -182,7 +182,7 @@ export AWS_DEFAULT_REGION=us-east-1
 pcluster ssh --cluster-name hpccluster -i ~/.ssh/keypair-alphafold2.pem
 ```
 
-- Once you logged into the headnode of the ParallelCluster cluster, install the software (ColabFold or AlphaFold2).
+- Once you logged into the headnode of the ParallelCluster cluster, install the software of your preference (ColabFold or AlphaFold2).
 
 **NOTE**: The following commands include both for ColabFold and AlphaFold2. Choose the one you prefer.
 
@@ -194,7 +194,7 @@ bash /fsx/colabfold/scripts/bin/app_install.sh
 bash /fsx/alphafold2/scripts/bin/app_install.sh
 ```
 
-- Create a database for ColabFold/AlphaFold2. Both cases take several hours to complete. Once the job has started, it is safe to close the terminal.
+- Create a database for ColabFold or AlphaFold2. Both cases take several hours to complete. Once you started the job, it is safe to close the terminal.
 
 ```sh
 ## Create database for the software of your choice
