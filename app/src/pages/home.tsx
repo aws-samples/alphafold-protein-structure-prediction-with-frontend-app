@@ -2,9 +2,12 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Layout } from '../components/layout'
 import { Link, Breadcrumbs, Box } from '@mui/material'
+import { useTranslation } from 'react-i18next'
+import '../lib/i18n'
 
 export const Home = () => {
   const navigate = useNavigate()
+  const { t, i18n } = useTranslation('ns1')
 
   useEffect(() => {
     navigate('/alphafold2')
@@ -23,8 +26,9 @@ export const Home = () => {
           </Box>
         )
       }}
+      changeLanguage={i18n.changeLanguage}
     >
-      <>この画面に表示するコンテンツはありません。</>
+      <>{t('No Content')}</>
     </Layout>
   )
 }
