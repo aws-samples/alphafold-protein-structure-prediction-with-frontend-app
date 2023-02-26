@@ -123,10 +123,17 @@ def get_job(target, job_id):
             Prefix=f"{target}/job/{job_id}/output/",
         )["Contents"]
 
-        keys = [ i["Key"] for i in list(filter(lambda o: re.search("\\.pdb$", o["Key"]), objects)) ]
+        keys = [
+            i["Key"]
+            for i in list(filter(lambda o: re.search("\\.pdb$", o["Key"]), objects))
+        ]
 
         # choose the prediction with highest confidence
-        params = {"Bucket": s3_bucket_name, "Key": sorted(keys)[0]}
+        params = {
+            "Bucket": s3_bucket_name,
+            "Key": sorted(keys)[0],
+            "ResponseContentDisposition": "attachment",
+        }
 
         s3.head_object(Bucket=params["Bucket"], Key=params["Key"])
         data["pdb_url"] = s3.generate_presigned_url(

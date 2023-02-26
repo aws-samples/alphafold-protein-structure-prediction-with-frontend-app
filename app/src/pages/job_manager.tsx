@@ -22,8 +22,10 @@ import {
   Grid
 } from '@mui/material'
 import { Help as HelpIcon } from '@mui/icons-material/'
-import { Layout, baseColor } from '../components/layout'
+import { Layout, baseColor, baseInvertColor } from '../components/layout'
 import { getJobs, getJob, Job, terminateJob, createJob } from '../lib/fetcher'
+import { useTranslation } from 'react-i18next'
+import '../lib/i18n'
 
 // @ts-ignore
 import * as $3Dmol from '3dmol/build/3Dmol-nojquery.js'
@@ -50,6 +52,7 @@ export function JobManager({ type }: { type: string }) {
   const [fasta, setFasta] = useState(defaultFasta)
   const pdbViewer = useRef(null)
   const navigate = useNavigate()
+  const { t, i18n } = useTranslation('ns1')
   const { env } = useEnv()
   const { data: jobs, mutate } = useSWR(`${env?.apiEndpoint}/${type}/jobs`, getJobs, {
     revalidateOnFocus: false,
@@ -105,7 +108,7 @@ export function JobManager({ type }: { type: string }) {
           <Box sx={{ ml: 2 }}>
             <Breadcrumbs sx={{ fontSize: '0.9em' }}>
               <Link underline="hover" color="inherit" onClick={() => navigate('/')} sx={{ cursor: 'pointer' }}>
-                ホーム
+                {t('Home')}
               </Link>
               <Link underline="hover" color="text.primary" href="/items">
                 {type.toUpperCase()}
@@ -114,17 +117,18 @@ export function JobManager({ type }: { type: string }) {
           </Box>
         )
       }}
+      changeLanguage={i18n.changeLanguage}
     >
       <Box sx={{ mb: 1 }}>
         <Typography variant="body1" sx={{ fontWeight: 600, color: baseColor() }}>
-          タンパク質構造予測ジョブの作成
+          {t('Job Create View Title')}
         </Typography>
       </Box>
 
       <Paper variant="outlined" sx={{ p: 1.5 }}>
         <Box>
           <TextField
-            label="FASTA 形式のテキストデータ"
+            label={t('Fasta Data Help Message')}
             spellCheck={false}
             multiline
             size="small"
@@ -135,7 +139,7 @@ export function JobManager({ type }: { type: string }) {
             sx={{ mt: 0.5, width: '100%' }}
           />
           <Grid container direction="row" justifyContent="flex-end" alignItems="center">
-            <Tooltip title="構造予測ジョブを作成します（ジョブの投入完了まで数十秒かかります）">
+            <Tooltip title={t('Create Job Help Message')}>
               <Button
                 variant="contained"
                 size="small"
@@ -146,7 +150,7 @@ export function JobManager({ type }: { type: string }) {
                   '&:hover': { boxShadow: 'none' }
                 }}
               >
-                構造予測ジョブの作成
+                {t('Create Job Button Title')}
               </Button>
             </Tooltip>
           </Grid>
@@ -155,7 +159,7 @@ export function JobManager({ type }: { type: string }) {
 
       <Box sx={{ mb: 1, mt: 3 }}>
         <Typography variant="body1" sx={{ fontWeight: 600, color: baseColor() }}>
-          タンパク質構造予測ジョブの一覧
+          {t('Job List View Title')}
         </Typography>
       </Box>
 
@@ -164,10 +168,10 @@ export function JobManager({ type }: { type: string }) {
           <Table size="small" sx={{}}>
             <TableHead sx={{ '& .MuiTableCell-head': { fontWeight: 600 } }}>
               <TableRow>
-                <TableCell>ジョブ ID</TableCell>
-                <TableCell>開始日時</TableCell>
-                <TableCell>終了日時</TableCell>
-                <TableCell>ステータス</TableCell>
+                <TableCell>{t('Job ID')}</TableCell>
+                <TableCell>{t('Job Start Time')}</TableCell>
+                <TableCell>{t('Job End Time')}</TableCell>
+                <TableCell>{t('Job Status')}</TableCell>
                 <TableCell align="right"></TableCell>
               </TableRow>
             </TableHead>
@@ -205,7 +209,7 @@ export function JobManager({ type }: { type: string }) {
                               '&:hover': { boxShadow: 'none' }
                             }}
                           >
-                            ジョブの強制終了
+                            {t('Terminate Job Button Title')}
                           </Button>
                         ) : (
                           <></>
@@ -226,7 +230,7 @@ export function JobManager({ type }: { type: string }) {
 
       <Box sx={{ mb: 1, mt: 3 }}>
         <Typography variant="body1" sx={{ fontWeight: 600, color: baseColor() }}>
-          タンパク質構造予測ジョブの結果
+          {t('Job Result View Title')}
         </Typography>
       </Box>
 
@@ -236,15 +240,33 @@ export function JobManager({ type }: { type: string }) {
             {(jobResult && (
               <div>
                 <Typography variant="body2" sx={{ ml: 1, color: baseColor() }}>
-                  ジョブ ID: {jobResult.id}
+                  <Button
+                    disabled
+                    variant="contained"
+                    sx={{
+                      '&.Mui-disabled': {
+                        color: baseColor()
+                      }
+                    }}
+                  >
+                    {t('Job ID')}: {jobResult.id}
+                  </Button>
                 </Typography>
+
                 {(jobResult.pdb_url && (
-                  <div ref={pdbViewer} style={{ height: 500, width: 700, position: 'relative' }}></div>
+                  <>
+                    <div ref={pdbViewer} style={{ height: 500, width: 700, position: 'relative' }}></div>
+                    <Typography variant="body2" sx={{ ml: 1, color: baseColor() }}>
+                      <a href={jobResult.pdb_url} download>
+                        {t('Download PDB')}
+                      </a>
+                    </Typography>
+                  </>
                 )) || (
                   <Grid container direction="row" justifyContent="flex-start" alignItems="center" sx={{ mt: 2, ml: 2 }}>
                     <HelpIcon fontSize="small" sx={{ color: baseColor(0.7) }}></HelpIcon>
                     <Typography variant="body2" sx={{ ml: 0.5 }}>
-                      PDB ファイルが見つかりませんでした。Colabfold の場合は CPU ジョブを選択してください。
+                      {t('Not Found PDB')}
                     </Typography>
                   </Grid>
                 )}
@@ -253,7 +275,7 @@ export function JobManager({ type }: { type: string }) {
               <Grid container direction="row" justifyContent="flex-start" alignItems="center">
                 <HelpIcon fontSize="small" sx={{ color: baseColor(0.7) }}></HelpIcon>
                 <Typography variant="body2" sx={{ ml: 0.5 }}>
-                  ステータスが COMPLETED のジョブをクリックすると解析結果を表示します。
+                  {t('Job Result View Help Message')}
                 </Typography>
               </Grid>
             )}

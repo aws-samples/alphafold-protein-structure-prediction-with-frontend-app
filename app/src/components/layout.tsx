@@ -1,6 +1,6 @@
 import { useLocation, Link } from 'react-router-dom'
 import { ReactNode } from 'react'
-import { Drawer, Box, AppBar, List, Typography, Grid, Container, Paper, Button } from '@mui/material'
+import { Drawer, Box, AppBar, List, Typography, Grid, Container, Paper, Button, Link as MUILink } from '@mui/material'
 import { Folder as FolderIcon, ExitToApp as ExitToAppIcon } from '@mui/icons-material/'
 import reactLogo from '../assets/react.svg'
 
@@ -24,7 +24,15 @@ const sideMenuButtonStyle = {
   }
 }
 
-export const Layout = ({ children, appBarRender }: { children: ReactNode; appBarRender: () => ReactNode }) => {
+export const Layout = ({
+  children,
+  appBarRender,
+  changeLanguage
+}: {
+  children: ReactNode
+  appBarRender: () => ReactNode
+  changeLanguage: (lng: string) => void
+}) => {
   const location = useLocation()
 
   const sideBarItems = [
@@ -34,7 +42,7 @@ export const Layout = ({ children, appBarRender }: { children: ReactNode; appBar
 
   return (
     <>
-      {/* ヘッダー */}
+      {/* Header */}
       <AppBar
         sx={{
           width: `calc(100% - ${SIDE_BAR_WIDTH}px)`,
@@ -45,12 +53,40 @@ export const Layout = ({ children, appBarRender }: { children: ReactNode; appBar
           boxShadow: 'none'
         }}
       >
-        <Grid container direction="row" justifyContent="flex-start" alignItems="center">
+        <Grid container direction="row" justifyContent="space-between" alignItems="center">
           <Grid item>{appBarRender()}</Grid>
+          <Grid item pr={2}>
+            <Grid container direction="row" justifyContent="space-between" alignItems="center" spacing={1}>
+              <Grid item>
+                <Typography sx={{ fontSize: '0.9em' }}>
+                  <MUILink
+                    underline="hover"
+                    color={baseColor()}
+                    onClick={() => changeLanguage('en')}
+                    sx={{ cursor: 'pointer' }}
+                  >
+                    English
+                  </MUILink>
+                </Typography>
+              </Grid>
+              <Grid item>
+                <Typography sx={{ fontSize: '0.9em' }}>
+                  <MUILink
+                    underline="hover"
+                    color={baseColor()}
+                    onClick={() => changeLanguage('ja')}
+                    sx={{ cursor: 'pointer' }}
+                  >
+                    日本語
+                  </MUILink>
+                </Typography>
+              </Grid>
+            </Grid>
+          </Grid>
         </Grid>
       </AppBar>
 
-      {/* サイドバー */}
+      {/* SideBar */}
       <Drawer
         variant="permanent"
         sx={{
@@ -60,7 +96,7 @@ export const Layout = ({ children, appBarRender }: { children: ReactNode; appBar
           }
         }}
       >
-        {/* サービスアイコン */}
+        {/* SideBar > ServiceIcon */}
         <Grid container direction="row" padding={2}>
           <Grid item component={Link} to="/">
             <img src={reactLogo} />
@@ -72,7 +108,7 @@ export const Layout = ({ children, appBarRender }: { children: ReactNode; appBar
           </Grid>
         </Grid>
 
-        {/* サイドバーのメニューリスト */}
+        {/* SideBar > MenuList */}
         <List component="nav">
           {sideBarItems.map((sideBarItem) => {
             return (
@@ -94,7 +130,7 @@ export const Layout = ({ children, appBarRender }: { children: ReactNode; appBar
         </List>
       </Drawer>
 
-      {/* メインコンテンツ */}
+      {/* MainContent */}
       <Box
         component="main"
         sx={{
