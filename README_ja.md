@@ -48,9 +48,16 @@ Admin:~/environment $ cd your_samples/
 **NOTE:** 以降の手順は、上記 Cloud9 環境からの作業を推奨します
 
 ### 1. バックエンドの構築
-
+- バックエンドのデプロイ前にフロントエンドをビルドします
 ```sh
-cd provisioning
+## フロントエンドのビルド
+cd app
+npm install
+npm run build
+```
+- バックエンドをビルドします
+```sh
+cd ../provisioning
 npm install
 npx cdk bootstrap
 ## Network, Database, Storage などの構築
@@ -123,12 +130,8 @@ pcluster describe-cluster -n hpccluster | grep -A 5 headNode | grep instanceId
 - 修正後、フロントエンドをデプロイ
 
 ```sh
-## フロントエンドのビルド
-cd app
-npm install
-npm run build
 ## フロントエンドのデプロイ
-cd ../provisioning
+cd provisioning
 npx cdk deploy FrontendStack --require-approval never
 ```
 
