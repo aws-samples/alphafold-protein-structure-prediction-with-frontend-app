@@ -54,10 +54,16 @@ cd alphafold-protein-structure-prediction-with-frontend-app/
 
 ### 1. Backend
 
-- In the terminal window of Cloud9 IDE, enter the following.
-
+- Before deploying backend CDK stack, you need to build frontend CDK stack. In the terminal window of Cloud9 IDE, enter the following.
 ```sh
-cd provisioning
+## Build the frontend CDK stack
+cd app
+npm install
+npm run build
+```
+- Deploy backend CDK stack.
+```sh
+cd ../provisioning
 npm install
 npx cdk bootstrap
 ## Set up the network, database, and storage 
@@ -154,12 +160,8 @@ Output:
 - After the modification, deploy the frontend CDK stack.
 
 ```sh
-## Build the frontend CDK stack
-cd app
-npm install
-npm run build
 ## Deploy the frontend CDK stack
-cd ../provisioning
+cd provisioning
 npx cdk deploy FrontendStack --require-approval never
 ```
 
