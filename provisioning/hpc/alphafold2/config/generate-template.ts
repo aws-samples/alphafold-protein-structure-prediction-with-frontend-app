@@ -46,6 +46,10 @@ async function getProvisionedEnv() {
   const AuroraPasswordArn = stack?.Outputs?.find((output) => {
     return output.OutputKey == 'AuroraPasswordArn'
   })?.OutputValue
+  
+  const HeadNodeSg = stack?.Outputs?.find((output) => {
+    return output.OutputKey == 'HeadNodeSecurityGroup'
+  })?.OutputValue
 
   const sm = new aws.SecretsManager({ region: REGION })
   const secretVal = await sm.getSecretValue({ SecretId: AuroraCredentialSecretArn! }).promise()
@@ -62,7 +66,8 @@ async function getProvisionedEnv() {
     dbUser: s.username,
     dbPass: s.password,
     dbName: s.dbname,
-    AuroraPasswordArn
+    AuroraPasswordArn,
+    HeadNodeSg
   }
 }
 
@@ -77,7 +82,8 @@ class SlurmConfigFileGenerator {
     private dbUser: string,
     private dbPass: string,
     private fsxId: string,
-    private AuroraPasswordArn: string
+    private AuroraPasswordArn: string,
+    private HeadNodeSg: string
   ) {}
 
   generate(props: { templatePath: string; outputPath: string }) {
@@ -103,6 +109,8 @@ class SlurmConfigFileGenerator {
       .replace(new RegExp('\\${REGION}', 'g'), REGION)
       .replace(new RegExp('\\${FSX_NAME}', 'g'), this.fsxId)
       .replace(new RegExp('\\${AURORA_PASSWORD_ARN}', 'g'), this.AuroraPasswordArn)
+      .replace(new RegExp('\\${FSX_NAME}', 'g'), this.fsxId)
+      .replace(new RegExp('\\${HEADNODE_SG}', 'g'), this.HeadNodeSg)
 
     try {
       fs.writeFileSync(props.outputPath, template)
@@ -125,7 +133,8 @@ async function main() {
     env.dbUser,
     env.dbPass,
     env.fsxId!,
-    env.AuroraPasswordArn!
+    env.AuroraPasswordArn!,
+    env.HeadNodeSg!
   )
   generator.generate({
     templatePath: path.join(__dirname, 'config.template.yml'),

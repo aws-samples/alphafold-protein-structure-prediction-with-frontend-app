@@ -17,10 +17,14 @@ import { Construct } from 'constructs'
 
 const CDK_ENV = process.env.CDK_ENV ? `-${process.env.CDK_ENV}` : ''
 
+interface Alphafold2ServiceStackProps extends StackProps {
+  c9Eip: string
+}
+
 export class Alphafold2ServiceStack extends Stack {
   readonly bucket: s3.Bucket
 
-  constructor(scope: Construct, id: string, props?: StackProps) {
+  constructor(scope: Construct, id: string, props: Alphafold2ServiceStackProps) {
     super(scope, id, props)
 
     // HPC を配置する VPC を作成
@@ -158,6 +162,12 @@ export class Alphafold2ServiceStack extends Stack {
       storageCapacityGiB: 2400,
       removalPolicy: RemovalPolicy.DESTROY
     })
+    
+    // ParallelCluster Head Node用 のセキュリティグループを作成
+    const pClusterHeadNodeSecurityGroup = new ec2.SecurityGroup(this, 'pClusterHeadNodeSecurityGroup', {
+      vpc: hpcVpc
+    })
+    pClusterHeadNodeSecurityGroup.addIngressRule(ec2.Peer.ipv4(props.c9Eip + '/32'), ec2.Port.tcp(22))
 
     // 構築したリソースの情報を CloudFormation に出力
     new CfnOutput(this, 'VpcId', {
@@ -194,6 +204,10 @@ export class Alphafold2ServiceStack extends Stack {
 
     new CfnOutput(this, 'AuroraPasswordArn', {
       value: auroraPassword.secretArn
+    })
+    
+    new CfnOutput(this, 'HeadNodeSecurityGroup', { 
+      value: pClusterHeadNodeSecurityGroup.securityGroupId
     })
   }
 }

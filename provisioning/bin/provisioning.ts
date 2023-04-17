@@ -8,7 +8,8 @@ const app = new cdk.App()
 const alphafold = new Alphafold2ServiceStack(app, `Alphafold2ServiceStack${CDK_ENV}`, {
   env: {
     region: 'us-east-1'
-  }
+  },
+  c9Eip: 'your-cloud9-ip'
 })
 
 const frontend = new FrontendStack(app, `FrontendStack${CDK_ENV}`, {

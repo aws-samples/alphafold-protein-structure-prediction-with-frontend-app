@@ -55,7 +55,15 @@ cd app
 npm install
 npm run build
 ```
-- バックエンドをビルドします
+
+- `provisioning/bin/provisioning.ts` にある `c9Eip` の値を Cloud9 のパブリップ IP アドレス に修正
+
+```diff
+-  c9Eip: 'your-cloud9-ip'
++  c9Eip: 'xx.xx.xx.xx'
+```
+
+- 修正後、バックエンドをビルドします
 ```sh
 cd ../provisioning
 npm install
@@ -75,6 +83,10 @@ chmod 600 ~/.ssh/keypair-alphafold2.pem
 ```
 
 ### 2. ParallelCluster クラスターの作成
+
+- バックエンドをデプロイしたら、次に ParallelCluster クラスターを作成します
+- Cloud9 IDE のターミナルで以下の手順に従ってコマンドを実行します
+- config.yml を修正することで、ワークロードに適したインスタンスタイプに変更することができます
 
 ```sh
 ## ParallelCluster コマンドのインストール
