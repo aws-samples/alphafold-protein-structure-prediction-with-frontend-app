@@ -61,7 +61,15 @@ cd app
 npm install
 npm run build
 ```
-- Deploy backend CDK stack.
+
+- In `provisioning/bin/provisioning.ts`, modify  the value of `c9Eip` to Cloud9 public IP address. 
+
+```diff
+-  c9Eip: 'your-cloud9-ip'
++  c9Eip: 'xx.xx.xx.xx'
+```
+
+- After the modification, deploy backend CDK stack.
 ```sh
 cd ../provisioning
 npm install
@@ -97,6 +105,7 @@ chmod 600 ~/.ssh/keypair-alphafold2.pem
 
 - Now that the backend has been built, the next step is to create clusters for protein structure prediction.
 - In the Cloud9 IDE terminal, enter the following. 
+- You can modify config.yml to change instance type which is appropriate to your workload. 
 
 **NOTE**: The following includes commands for both AlphaFold2 and ColabFold. Choose one that you prefer.
 

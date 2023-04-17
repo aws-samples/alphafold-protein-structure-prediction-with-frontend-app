@@ -6,6 +6,8 @@ HeadNode:
   Networking:
     SubnetId: ${PUBLIC_SUBNET}
     ElasticIp: true
+    SecurityGroups:
+     - ${HEADNODE_SG}
   Iam:
     S3Access:
       - BucketName: ${BUCKET_NAME}
@@ -40,21 +42,15 @@ Scheduling:
       Networking:
         SubnetIds:
           - ${PRIVATE_SUBNET}
-      Iam:
-        AdditionalIamPolicies:
-          - Policy: arn:aws:iam::aws:policy/AmazonSNSFullAccess
     - Name: queue-gpu
       ComputeResources:
-        - Name: g54xlarge
-          InstanceType: g5.4xlarge
+        - Name: g4dn2xlarge
+          InstanceType: g4dn.2xlarge
           MinCount: 0
           MaxCount: 10
       Networking:
         SubnetIds:
           - ${PRIVATE_SUBNET}
-      Iam:
-        AdditionalIamPolicies:
-          - Policy: arn:aws:iam::aws:policy/AmazonSNSFullAccess
 
 SharedStorage:
   # Fsx for Lustreの設定

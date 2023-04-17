@@ -6,6 +6,8 @@ HeadNode:
   Networking:
     SubnetId: ${PUBLIC_SUBNET}
     ElasticIp: true
+    SecurityGroups:
+     - ${HEADNODE_SG}
   Iam:
     S3Access:
       - BucketName: ${BUCKET_NAME}
@@ -45,13 +47,11 @@ Scheduling:
         S3Access:
           - BucketName: ${BUCKET_NAME}
             EnableWriteAccess: true
-        AdditionalIamPolicies:
-          - Policy: arn:aws:iam::aws:policy/AmazonSNSFullAccess
     - Name: queue-gpu
       ComputeResources:
-        - Name: g54xlarge
+        - Name: g4dn2xlarge
           Instances:
-          - InstanceType: g4dn.4xlarge
+          - InstanceType: g4dn.2xlarge
           MinCount: 0
           MaxCount: 10
       Networking:
@@ -61,8 +61,6 @@ Scheduling:
         S3Access:
           - BucketName: ${BUCKET_NAME}
             EnableWriteAccess: true
-        AdditionalIamPolicies:
-          - Policy: arn:aws:iam::aws:policy/AmazonSNSFullAccess
       CustomActions:
         OnNodeConfigured:
           Script: ${POST_INSTALL_SCRIPT_FOR_GPU_LOCATION}
