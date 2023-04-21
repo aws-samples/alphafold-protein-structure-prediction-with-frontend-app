@@ -1,5 +1,5 @@
 #!/bin/sh
-#SBATCH -n 64
+#SBATCH -n 32
 #SBATCH -N 1
 
 export PATH="/fsx/colabfold/colabfold_install/colabfold-conda/bin:/fsx/mmseqs2/bin:${PATH}"

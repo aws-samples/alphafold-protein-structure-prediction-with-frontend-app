@@ -4,66 +4,53 @@ Image:
 HeadNode:
   InstanceType: c5.xlarge
   Networking:
-    SubnetId: ${PUBLIC_SUBNET}
+    SubnetId: subnet-024f62b6a5be79462
     ElasticIp: true
     SecurityGroups:
-     - ${HEADNODE_SG}
+     - sg-0a20cff17544a19a2
   Iam:
     S3Access:
-      - BucketName: ${BUCKET_NAME}
+      - BucketName: alphafold2servicestack-hpcbucketda3264c9-1n1l8vyid5rs2
         EnableWriteAccess: true
     AdditionalIamPolicies:
       - Policy: arn:aws:iam::aws:policy/SecretsManagerReadWrite
       - Policy: arn:aws:iam::aws:policy/AmazonFSxFullAccess
       - Policy: arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
   Ssh:
-    KeyName: ${SSH_KEY_NAME}
+    KeyName: keypair-alphafold2
   CustomActions:
     OnNodeConfigured:
-      Script: ${POST_INSTALL_SCRIPT_FOR_HEADNODE_LOCATION}
+      Script: s3://alphafold2servicestack-hpcbucketda3264c9-1n1l8vyid5rs2/colabfold/scripts/bin/post_install.sh
       Args:
-        - ${FSX_NAME}
-        - ${BUCKET_NAME}
+        - fs-0c0fec69e4cc2a2b2
+        - alphafold2servicestack-hpcbucketda3264c9-1n1l8vyid5rs2
 
 Scheduling:
   Scheduler: slurm
   SlurmSettings:
     Database:
-      Uri: ${PCLUSTER_RDS_HOST}:${PCLUSTER_RDS_PORT}
-      UserName: ${PCLUSTER_RDS_USER}
-      PasswordSecretArn: ${AURORA_PASSWORD_ARN}
+      Uri: alphafold2servicestack-auroracluster23d869c0-tpyu5zty7vij.cluster-caojp2xix6y8.us-east-1.rds.amazonaws.com:3306
+      UserName: hpc
+      PasswordSecretArn: arn:aws:secretsmanager:us-east-1:191643194801:secret:AuroraPasswordC8BD72EA-KrNfYPBIII7h-gx4nG0
   SlurmQueues:
     - Name: queue-cpu
       ComputeResources:
         - Name: r6i8xlarge
-          Instances:
-          - InstanceType: r6i.8xlarge
+          InstanceType: r6i.8xlarge
           MinCount: 0
           MaxCount: 10
       Networking:
         SubnetIds:
-          - ${PRIVATE_SUBNET}
-      Iam:
-        S3Access:
-          - BucketName: ${BUCKET_NAME}
-            EnableWriteAccess: true
+          - subnet-091bceabb39e53003
     - Name: queue-gpu
       ComputeResources:
         - Name: g4dn2xlarge
-          Instances:
-          - InstanceType: g4dn.2xlarge
+          InstanceType: g4dn.2xlarge
           MinCount: 0
           MaxCount: 10
       Networking:
         SubnetIds:
-          - ${PRIVATE_SUBNET}
-      Iam:
-        S3Access:
-          - BucketName: ${BUCKET_NAME}
-            EnableWriteAccess: true
-      CustomActions:
-        OnNodeConfigured:
-          Script: ${POST_INSTALL_SCRIPT_FOR_GPU_LOCATION}
+          - subnet-091bceabb39e53003
 
 SharedStorage:
   # Fsx for Lustreの設定
@@ -71,4 +58,4 @@ SharedStorage:
     Name: shared-storage-lustre
     StorageType: FsxLustre
     FsxLustreSettings:
-      FileSystemId: ${FSX_NAME}
+      FileSystemId: fs-0c0fec69e4cc2a2b2
