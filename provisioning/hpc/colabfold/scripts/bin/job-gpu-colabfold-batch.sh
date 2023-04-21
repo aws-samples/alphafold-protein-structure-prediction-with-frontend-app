@@ -3,7 +3,7 @@
 #SBATCH -N 1
 
 # colabfold_batchを実行
-export PATH="/fsx/colabfold/colabfold_install/colabfold-conda/bin:${PATH}"
+export PATH="/fsx/colabfold/localcolabfold/colabfold-conda/bin:${PATH}"
 cd /home/ubuntu
 JOBROOT=/fsx/colabfold/job
 UNIREFDB=uniref30_2202_db
