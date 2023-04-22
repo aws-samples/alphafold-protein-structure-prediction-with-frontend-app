@@ -166,7 +166,11 @@ pcluster ssh --cluster-name hpccluster -i ~/.ssh/keypair-alphafold2.pem
 bash /fsx/colabfold/scripts/bin/app_install.sh
 ### AlphaFold2 の場合
 bash /fsx/alphafold2/scripts/bin/app_install.sh
+```
 
+- HeadNode　にログインし直して、環境変数がセットされるようにします。
+
+```sh
 ## データベースの作成
 ### ColabFold の場合
 sbatch /fsx/colabfold/scripts/setupDatabase.bth

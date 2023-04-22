@@ -205,6 +205,7 @@ bash /fsx/colabfold/scripts/bin/app_install.sh
 bash /fsx/alphafold2/scripts/bin/app_install.sh
 ```
 
+- Logout and login again to headnode to set environment variables.
 - Create a database for ColabFold or AlphaFold2. Both cases take several hours to complete. Once you started the job, it is safe to close the terminal.
 
 ```sh
