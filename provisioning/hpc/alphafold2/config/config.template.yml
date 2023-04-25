@@ -35,9 +35,9 @@ Scheduling:
   SlurmQueues:
     - Name: queue-cpu
       ComputeResources:
-        - Name: r6i8xlarge
+        - Name: r6i4xlarge
           Instances:
-          - InstanceType: r6i.8xlarge
+          - InstanceType: r6i.4xlarge
           MinCount: 0
           MaxCount: 10
       Networking:
