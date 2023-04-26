@@ -139,7 +139,7 @@ pcluster create-cluster --cluster-name hpccluster --cluster-configuration provis
 pcluster list-clusters
 ```
 
-```
+```json
 Output:
 {
   "clusters": [
