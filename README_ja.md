@@ -20,6 +20,7 @@ AlphaFold2 Webapp on AWS は、ユーザが GUI で AlphaFold2 または ColabFo
 ## AWS Cloud9 を使って開発環境を構築
 
 **NOTE**: AWS Cloud9 環境は `us-east-1` (N. Virginia) リージョンに作成してください。
+
 **NOTE**: この手順を使って開発環境を準備する場合は、上記の必要なソフトウェア (AWS CLI / Python / Node.js / Docker 等) は Cloud9 に初めからインストールされています。
 
 1. [AWS CloudShell](https://docs.aws.amazon.com/cloudshell/latest/userguide/welcome.html) を起動して下記コマンドを実行
@@ -239,3 +240,27 @@ squeue
   - もし URL を忘れてしまった場合は、[AWS Cloudformation のコンソール](https://us-east-1.console.aws.amazon.com/cloudformation) の`FrontendStack` の `出力` タブを見ると、`CloudFrontWebDistributionEndpoint` の値に記載されています。
   - 値は `xxxyyyzzz.cloudfront.net` のような形式です。
 - フロントエンドの画面か、ジョブの投入・ジョブ一覧の表示・ジョブの中止・ジョブの結果表示が行えます。
+
+### 7. Clean up
+
+この AWS Samples を試し終わったら、追加の費用が発生しないように不要なリソースを削除します。開発環境の Cloud9 のターミナルから以下のコマンドを実行してください。
+
+- まず、ParallelCluster のクラスターを削除します
+
+```sh
+## ParallelCluster のクラスター名の一覧を確認した上で、クラスターを削除
+pcluster list-clusters | grep clusterName
+pcluster delete-cluster -n {your cluster name}
+```
+
+- CDK スタックを削除します
+
+```sh
+## CDK スタック（フロントエンド・バックエンド）の名称を確認の上、それぞれ削除
+cd ~/environment/alphafold-protein-structure-prediction-with-frontend-app/provisioning
+cdk list
+cdk destroy FrontendStack
+cdk destroy Alphafold2ServiceStack
+```
+
+- 最後に、開発環境である Cloud9 環境を削除してください

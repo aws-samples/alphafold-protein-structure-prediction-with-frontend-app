@@ -292,24 +292,24 @@ Output:
 
 ### 7. Clean up
 
-- When you are done trying out this sample, remove the resource to avoid incurring additional costs.
+When you are done trying out this sample, remove the resource to avoid incurring additional costs. Run the following commands from the Cloud9 terminal.
 
-- First, delete your ParallelCluster cluster.
+- First, delete your ParallelCluster cluster
 
 ```sh
-## Get the ParallelCluster cluster name, then delete the cluster.
+## Get the ParallelCluster cluster name, then delete the cluster
 pcluster list-clusters | grep clusterName 
 pcluster delete-cluster -n {your cluster name}
 ```
 
-- Delete the CDK stacks.
+- Delete the CDK stacks
 
 ```sh
-## Check the name of the CDK stacks and destroy them
+## Check the name of the CDK stacks (for frontend and backend) and destroy them
 cd ~/environment/alphafold-protein-structure-prediction-with-frontend-app/provisioning
 cdk list
 cdk destroy FrontendStack
 cdk destroy Alphafold2ServiceStack
 ```
 
-- If you used Cloud9 for deploying this sample, remove the Cloud9 environment.
+- Lastly, Remove the Cloud9 development environment
