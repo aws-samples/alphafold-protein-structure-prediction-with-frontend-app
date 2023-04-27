@@ -164,8 +164,8 @@ Output:
 {
   "clusters": [
     {
-      "clusterName": "hpcclustercolab",
-      ## Wait until CREATE_COMPLETE
+      "clusterName": "hpccluster",
+      ## Wait until CREATE_COMPLETE 
       "cloudformationStackStatus": "CREATE_COMPLETE",
 ...
 ```
@@ -286,3 +286,27 @@ Output:
   - If you forgot the URL, you can check it from the value of `CloudFrontWebDistributionEndpoint` at the outputs tab of the stack named `FrontendStack` at [AWS Cloudformation Console](https://us-east-1.console.aws.amazon.com/cloudformation).
   - It looks like `xxxyyyzzz.cloudfront.net`.
 - From the frontend, you can submit a job, list recent jobs, cancel a job, and visualize the result of the job.
+
+### 7. Clean up
+
+- When you are done trying out this sample, remove the resource to avoid incurring additional costs.
+
+- First, delete your ParallelCluster cluster.
+
+```sh
+## Get the ParallelCluster cluster name, then delete the cluster.
+pcluster list-clusters | grep clusterName 
+pcluster delete-cluster -n {your cluster name}
+```
+
+- Delete the CDK stacks.
+
+```sh
+## Check the name of the CDK stacks and destroy them
+cd ~/environment/alphafold-protein-structure-prediction-with-frontend-app/provisioning
+cdk list
+cdk destroy FrontendStack
+cdk destroy Alphafold2ServiceStack
+```
+
+- If you used Cloud9 for deploying this sample, remove the Cloud9 environment.
