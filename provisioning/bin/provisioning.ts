@@ -7,8 +7,7 @@ import { GlobalStack } from '../stacks/global-stack'
 const c9Eip = 'your-cloud9-ip'
 
 // FrontendStack dependencies
-const allowIp4Ranges = ['your-global-ip-v4']
-const allowIp6Ranges = ['your-global-ip-v6']
+const allowIp4Ranges = ['your-global-ip-v4-cidr']
 const ssmInstanceId = 'your-headnode-instanceid'
 
 const CDK_ENV = process.env.CDK_ENV ? `-${process.env.CDK_ENV}` : ''
@@ -19,8 +18,7 @@ const globalStack = new GlobalStack(app, `GlobalStack${CDK_ENV}`, {
     region: 'us-east-1'
   },
   wafv2: {
-    allowIp4Ranges: allowIp4Ranges,
-    allowIp6Ranges: allowIp6Ranges
+    allowIp4Ranges: allowIp4Ranges
   }
 })
 
@@ -39,6 +37,5 @@ const frontend = new FrontendStack(app, `FrontendStack${CDK_ENV}`, {
   ssmCommandUsername: 'ubuntu',
   storageBucketName: alphafold.bucket.bucketName,
   globalStack: globalStack,
-  allowIp4Ranges: allowIp4Ranges,
-  allowIp6Ranges: allowIp6Ranges
+  allowIp4Ranges: allowIp4Ranges
 }).addDependency(globalStack)

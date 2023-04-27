@@ -4,12 +4,10 @@ import { Construct } from 'constructs'
 interface IPSetConstructProps {
   scope: 'CLOUDFRONT' | 'REGIONAL'
   allowIp4Ranges: string[]
-  allowIp6Ranges?: string[]
 }
 
 export class IPSetConstruct extends Construct {
   readonly ipSet4: waf.CfnIPSet
-  readonly ipSet6: waf.CfnIPSet
 
   constructor(scope: Construct, id: string, props: IPSetConstructProps) {
     super(scope, id)
@@ -19,20 +17,12 @@ export class IPSetConstruct extends Construct {
       scope: props.scope,
       addresses: props.allowIp4Ranges
     })
-
-    this.ipSet6 = new waf.CfnIPSet(this, 'IPSetV6', {
-      ipAddressVersion: 'IPV6',
-      scope: props.scope,
-      addresses: props.allowIp6Ranges || []
-    })
   }
 }
 
 interface WAFv2ConstructProps {
   scope: 'CLOUDFRONT' | 'REGIONAL'
   allowIp4Set: waf.CfnIPSet
-  allowIp6Set?: waf.CfnIPSet
-  addPrototypingManagedRules?: Boolean
 }
 
 export class WAFv2Construct extends Construct {
@@ -58,24 +48,6 @@ export class WAFv2Construct extends Construct {
         }
       }
     })
-
-    if (props.allowIp6Set) {
-      rules.push({
-        priority: 10,
-        name: 'WAFv2IpV6RuleSet',
-        action: { allow: {} },
-        visibilityConfig: {
-          sampledRequestsEnabled: true,
-          cloudWatchMetricsEnabled: true,
-          metricName: 'WAFv2IpV6RuleSet'
-        },
-        statement: {
-          ipSetReferenceStatement: {
-            arn: props.allowIp6Set.attrArn
-          }
-        }
-      })
-    }
 
     const webAcl = new waf.CfnWebACL(this, 'WebAcl', {
       defaultAction: { block: {} },

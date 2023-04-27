@@ -29,7 +29,6 @@ interface FrontendStackProps extends StackProps {
   storageBucketName: string
   globalStack: GlobalStack
   allowIp4Ranges?: string[]
-  allowIp6Ranges?: string[]
 }
 
 export class FrontendStack extends Stack {
@@ -41,24 +40,20 @@ export class FrontendStack extends Stack {
     })
 
     let allowIpV4Set = undefined
-    let allowIpV6Set = undefined
 
     if (props?.allowIp4Ranges !== undefined) {
       const ipSet = new IPSetConstruct(this, 'IpSet', {
         scope: 'REGIONAL',
-        allowIp4Ranges: props.allowIp4Ranges,
-        allowIp6Ranges: props.allowIp6Ranges
+        allowIp4Ranges: props.allowIp4Ranges
       })
 
       allowIpV4Set = ipSet.ipSet4
-      allowIpV6Set = ipSet.ipSet6
     }
 
     if (allowIpV4Set !== undefined) {
       const waf = new WAFv2Construct(this, 'IPRestrictionWAFv2', {
         scope: 'REGIONAL',
-        allowIp4Set: allowIpV4Set,
-        allowIp6Set: allowIpV6Set
+        allowIp4Set: allowIpV4Set
       })
 
       new wafv2.CfnWebACLAssociation(this, 'APIGatewayWAFAssociation', {
@@ -131,7 +126,8 @@ export class FrontendStack extends Stack {
           ]
         }
       ],
-      priceClass: cloudfront.PriceClass.PRICE_CLASS_ALL
+      priceClass: cloudfront.PriceClass.PRICE_CLASS_ALL,
+      enableIpV6: false
     })
 
     const frontendEnvVars = {

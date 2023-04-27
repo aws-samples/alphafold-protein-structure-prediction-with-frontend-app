@@ -165,13 +165,11 @@ pcluster describe-cluster -n hpccluster | grep -A 5 headNode | grep instanceId
 +const ssmInstanceId = 'i-{任意のID}'
 ```
 
-- `provisioning/bin/provisioning.ts` にある `allowIp4Ranges` `allowIp6Ranges` の値を、フロントエンドへの接続を許可する IP アドレスレンジに修正
+- `provisioning/bin/provisioning.ts` にある `allowIp4Ranges` の値を、フロントエンドへの接続を許可する IP アドレスレンジに修正
 
 ```diff
--const allowIp4Ranges = ['your-global-ip-v4']
--const allowIp6Ranges = ['your-global-ip-v6']
+-const allowIp4Ranges = ['your-global-ip-v4-cidr']
 +const allowIp4Ranges = ['xx.xx.xx.xx/xx']
-+const allowIp6Ranges = []
 ```
 
 - 修正後、フロントエンドをデプロイ

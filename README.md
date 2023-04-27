@@ -192,13 +192,11 @@ Output:
 +const ssmInstanceId = 'i-{your_headnode_instanceid}'
 ```
 
-- In `provisioning/bin/provisioning.ts`, modify the value of `allowIp4Ranges` and `allowIp6Ranges` to the IP address ranges that are allowed to connect to the frontend.
+- In `provisioning/bin/provisioning.ts`, modify the value of `allowIp4Ranges` to the IP address ranges that are allowed to connect to the frontend.
 
 ```diff
--const allowIp4Ranges = ['your-global-ip-v4']
--const allowIp6Ranges = ['your-global-ip-v6']
+-const allowIp4Ranges = ['your-global-ip-v4-cidr']
 +const allowIp4Ranges = ['xx.xx.xx.xx/xx']
-+const allowIp6Ranges = []
 ```
 
 - After the modification, deploy the frontend CDK stack.
@@ -258,11 +256,16 @@ sbatch /fsx/colabfold/scripts/setupDatabase.bth
 wget -q -P /fsx/alphafold2/job/input/ https://rest.uniprot.org/uniprotkb/Q5VSL9.fasta
 
 ## Start the job using CLI
-### For AlphaFold2
 python3 /fsx/alphafold2/scripts/job_create.py Q5VSL9.fasta
-### For ColabFold
-python3 /fsx/colabfold/scripts/job_create.py Q5VSL9.fasta
 ```
+
+<details>
+<summary>For ColabFold</summary>
+<pre>
+wget -q -P /fsx/colabfold/job/input/ https://rest.uniprot.org/uniprotkb/Q5VSL9.fasta
+python3 /fsx/colabfold/scripts/job_create.py Q5VSL9.fasta
+</pre>
+</details>
 
 - Check the job status with the following command.
 

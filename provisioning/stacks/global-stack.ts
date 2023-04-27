@@ -8,7 +8,7 @@ const OUTPUT_PATH_WAF_V2_ARN = 'GlobalWAFv2ARN'
 export interface GlobalStackProps extends StackProps {
   wafv2: {
     allowIp4Ranges: string[]
-    allowIp6Ranges: string[]
+    allowIp6Ranges?: string[]
   }
 }
 
@@ -18,14 +18,12 @@ export class GlobalStack extends Stack {
 
     const allowIpSet = new IPSetConstruct(this, 'IpSet', {
       scope: 'CLOUDFRONT',
-      allowIp4Ranges: props.wafv2.allowIp4Ranges,
-      allowIp6Ranges: props.wafv2.allowIp6Ranges
+      allowIp4Ranges: props.wafv2.allowIp4Ranges
     })
 
     const waf = new WAFv2Construct(this, 'GlobalWaf', {
       scope: 'CLOUDFRONT',
-      allowIp4Set: allowIpSet.ipSet4,
-      allowIp6Set: allowIpSet.ipSet6
+      allowIp4Set: allowIpSet.ipSet4
     })
 
     new CfnOutput(this, OUTPUT_PATH_WAF_V2_ARN, {
