@@ -13,6 +13,7 @@ interface RestApiProps extends StackProps {
 export class RestApi extends Construct {
   public readonly restApi: apiGateway.RestApi
   public readonly endpoint: string
+  public readonly resourceArn: string
   public apiKey: apiGateway.IApiKey
   private readonly resources: { [key: string]: apiGateway.IResource }
 
@@ -65,6 +66,7 @@ export class RestApi extends Construct {
     const stageName = this.restApi.deploymentStage.stageName
 
     this.endpoint = `https://${restApiId}.execute-api.${region}.amazonaws.com/${stageName}`
+    this.resourceArn = `arn:aws:apigateway:${region}::/restapis/${restApiId}/stages/${stageName}`
   }
 
   addResource(

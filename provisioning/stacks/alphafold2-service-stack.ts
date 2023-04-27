@@ -168,6 +168,8 @@ export class Alphafold2ServiceStack extends Stack {
       vpc: hpcVpc
     })
     pClusterHeadNodeSecurityGroup.addIngressRule(ec2.Peer.ipv4(props.c9Eip + '/32'), ec2.Port.tcp(22))
+    pClusterHeadNodeSecurityGroup.addIngressRule(ec2.Peer.ipv4(hpcVpc.privateSubnets[0].ipv4CidrBlock), ec2.Port.allTraffic())
+    pClusterHeadNodeSecurityGroup.addIngressRule(ec2.Peer.ipv4(hpcVpc.privateSubnets[1].ipv4CidrBlock), ec2.Port.allTraffic())
 
     // 構築したリソースの情報を CloudFormation に出力
     new CfnOutput(this, 'VpcId', {

@@ -32,29 +32,10 @@ sudo make install
 # ColabFold インストール
 #####
 cd /fsx/colabfold
-CURRENTPATH=`pwd`
-COLABFOLDDIR="${CURRENTPATH}/colabfold_install"
-rm -fr ${COLABFOLDDIR}
-mkdir -p ${COLABFOLDDIR}
-cd ${COLABFOLDDIR}
-wget -q -P . https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-bash ./Miniconda3-latest-Linux-x86_64.sh -b -p ${COLABFOLDDIR}/conda
-rm Miniconda3-latest-Linux-x86_64.sh
-. "${COLABFOLDDIR}/conda/etc/profile.d/conda.sh"
-conda create -p $COLABFOLDDIR/colabfold-conda python=3.7 -y
-conda activate $COLABFOLDDIR/colabfold-conda
-conda update -n base conda -y
-conda install -c conda-forge python=3.7 cudnn==8.2.1.32 cudatoolkit==11.1.1 openmm==7.5.1 pdbfixer -y
-conda install -c conda-forge -c bioconda kalign3=3.2.2 hhsuite=3.3.0 -y
-colabfold-conda/bin/python3.7 -m pip install "colabfold[alphafold] @ git+https://github.com/sokrypton/ColabFold"
-colabfold-conda/bin/python3.7 -m pip install https://storage.googleapis.com/jax-releases/cuda11/jaxlib-0.3.10+cuda11.cudnn82-cp37-none-manylinux2014_x86_64.whl
-colabfold-conda/bin/python3.7 -m pip install jax==0.3.13
+wget https://raw.githubusercontent.com/YoshitakaMo/localcolabfold/main/install_colabbatch_linux.sh
+bash install_colabbatch_linux.sh
 mkdir -p /fsx/colabfold/job
 
 wget -q -P /fsx/colabfold/scripts/bin/ https://raw.githubusercontent.com/sokrypton/ColabFold/main/setup_databases.sh
 chmod u+x /fsx/colabfold/scripts/bin/setup_databases.sh
-cat > /fsx/colabfold/scripts/setupDatabase.bth <<EOF
-#!/bin/bash
-mkdir /fsx/colabfold/database
-/fsx/colabfold/scripts/bin/setup_databases.sh /fsx/colabfold/database
-EOF
+

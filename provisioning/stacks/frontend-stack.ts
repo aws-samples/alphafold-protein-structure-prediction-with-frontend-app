@@ -7,6 +7,7 @@ import {
   Duration,
   CfnOutput,
   aws_s3 as s3,
+  aws_wafv2 as wafv2,
   aws_iam as iam,
   aws_lambda as lambda,
   aws_s3_deployment as s3deploy,
@@ -18,12 +19,17 @@ import {
 import { Construct } from 'constructs'
 import { PythonFunction } from '@aws-cdk/aws-lambda-python-alpha'
 import { RestApi } from './constructs/rest-api'
+import { GlobalStack } from './global-stack'
+import { IPSetConstruct, WAFv2Construct } from './constructs/waf-v2'
 
 interface FrontendStackProps extends StackProps {
   vpc?: ec2.IVpc
   ssmInstanceId: string
   ssmCommandUsername: string
   storageBucketName: string
+  globalStack: GlobalStack
+  allowIp4Ranges?: string[]
+  allowIp6Ranges?: string[]
 }
 
 export class FrontendStack extends Stack {
@@ -33,6 +39,33 @@ export class FrontendStack extends Stack {
     const apigw = new RestApi(this, 'Api', {
       allowOrigins: ['*']
     })
+
+    let allowIpV4Set = undefined
+    let allowIpV6Set = undefined
+
+    if (props?.allowIp4Ranges !== undefined) {
+      const ipSet = new IPSetConstruct(this, 'IpSet', {
+        scope: 'REGIONAL',
+        allowIp4Ranges: props.allowIp4Ranges,
+        allowIp6Ranges: props.allowIp6Ranges
+      })
+
+      allowIpV4Set = ipSet.ipSet4
+      allowIpV6Set = ipSet.ipSet6
+    }
+
+    if (allowIpV4Set !== undefined) {
+      const waf = new WAFv2Construct(this, 'IPRestrictionWAFv2', {
+        scope: 'REGIONAL',
+        allowIp4Set: allowIpV4Set,
+        allowIp6Set: allowIpV6Set
+      })
+
+      new wafv2.CfnWebACLAssociation(this, 'APIGatewayWAFAssociation', {
+        webAclArn: waf.arn,
+        resourceArn: apigw.resourceArn
+      })
+    }
 
     const func = new PythonFunction(this, 'ApiHandler', {
       runtime: lambda.Runtime.PYTHON_3_9,
@@ -74,7 +107,9 @@ export class FrontendStack extends Stack {
     const websiteIdentity = new cloudfront.OriginAccessIdentity(this, 'WebsiteIdentity')
     websiteBucket.grantRead(websiteIdentity)
 
+    const globalWAFv2Arn = props.globalStack.getWAFv2ARN(this, 'GlobalWAFv2ARN')
     const websiteDistribution = new cloudfront.CloudFrontWebDistribution(this, 'WebsiteDistribution', {
+      webACLId: globalWAFv2Arn,
       errorConfigurations: [
         {
           errorCachingMinTtl: 300,

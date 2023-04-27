@@ -1,0 +1,6 @@
+#!/bin/bash
+#SBATCH -n 16
+#SBATCH -N 1
+sudo apt-get install aria2 -y
+mkdir /fsx/colabfold/database
+/fsx/colabfold/scripts/bin/setup_databases.sh /fsx/colabfold/database

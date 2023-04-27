@@ -1,8 +1,8 @@
 #!/bin/sh
-#SBATCH -n 64
+#SBATCH -n 16
 #SBATCH -N 1
 
-export PATH="/fsx/colabfold/colabfold_install/colabfold-conda/bin:/fsx/mmseqs2/bin:${PATH}"
+export PATH="/fsx/colabfold/localcolabfold/colabfold-conda/bin:/fsx/mmseqs2/bin:${PATH}"
 
 # vmtouch
 cd /fsx/vmtouch

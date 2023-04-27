@@ -2,7 +2,7 @@
 
 View this page in [English](README.md)
 
-AlphaFold2 Webapp on AWS は、ユーザが GUI でAlphaFold2 や ColabFold を実行できるようなウェブアプリ環境を提供します。また、管理者は AlphaFold2 や ColabFold の解析環境を AWS CDK を用いて簡単に構築することができます。
+AlphaFold2 Webapp on AWS は、ユーザが GUI で AlphaFold2 または ColabFold を実行できるウェブアプリケーション環境を提供します。管理者は AlphaFold2 や ColabFold の解析環境を AWS CDK を用いて簡単に構築することができます。
 
 <img src="doc/webui.png" width=500>
 
@@ -27,15 +27,33 @@ AlphaFold2 Webapp on AWS は、ユーザが GUI でAlphaFold2 や ColabFold を�
 ```sh
 git clone https://github.com/aws-samples/cloud9-setup-for-prototyping
 cd cloud9-setup-for-prototyping
+```
 
-## Cloud9 環境 "cloud9-for-prototyping" を構築します
+2. Cloud9 に Elastic IP を付与するため、`vim params.json` で params.json を編集し、`attach_eip` オプションを `true` に変更します。
+
+```diff
+  "volume_size": 128,
+- "attach_eip": false
++ "attach_eip": true
+}
+```
+
+3. Cloud9 環境 "cloud9-for-prototyping" を構築します
+
+```sh
 ./bin/bootstrap
 ```
 
-1. AWS Cloud9 に移動して `cloud9-for-prototyping` を起動
-1. `File` から `Upload Local Files` を押下
-1. 本リポジトリのソース zip ファイルを `Drag & drop file here` に投下
-1. `unzip` コマンドで zip を解凍してディレクトリを移動
+**NOTE:** bootstrap の完了時に Cloud9 に付与された Elastic IP が画面上に出力されます。この IP は後ほど参照するため、手元にコピーしておきます。
+
+```
+Elastic IP: 127.0.0.1 (例)
+```
+
+4. AWS Cloud9 に移動して `cloud9-for-prototyping` を起動
+5. `File` から `Upload Local Files` を押下
+6. 本リポジトリのソース zip ファイルを `Drag & drop file here` に投下
+7. `unzip` コマンドで zip を解凍してディレクトリを移動
 
 ```sh
 Admin:~/environment $ unzip your_samples.zip
@@ -48,7 +66,9 @@ Admin:~/environment $ cd your_samples/
 **NOTE:** 以降の手順は、上記 Cloud9 環境からの作業を推奨します
 
 ### 1. バックエンドの構築
+
 - バックエンドのデプロイ前にフロントエンドをビルドします
+
 ```sh
 ## フロントエンドのビルド
 cd app
@@ -56,14 +76,15 @@ npm install
 npm run build
 ```
 
-- `provisioning/bin/provisioning.ts` にある `c9Eip` の値を Cloud9 のパブリップ IP アドレス に修正
+- `provisioning/bin/provisioning.ts` にある `c9Eip` の値を、上述した手順で Cloud9 に付与された Elastic IP アドレス に修正
 
 ```diff
--  c9Eip: 'your-cloud9-ip'
-+  c9Eip: 'xx.xx.xx.xx'
+-const c9Eip = 'your-cloud9-ip'
++const c9Eip = 'xx.xx.xx.xx'
 ```
 
-- 修正後、バックエンドをビルドします
+- 修正後、バックエンドを構築します
+
 ```sh
 cd ../provisioning
 npm install
@@ -96,24 +117,29 @@ pip3 install aws-parallelcluster==3.3.0 --user
 export AWS_DEFAULT_REGION=us-east-1
 
 ## ParallelCluster を構築するための config.yml を作成
-### colabfold の場合
-npx ts-node provisioning/hpc/colabfold/config/generate-template.ts
-### alphafold2 の場合
 npx ts-node provisioning/hpc/alphafold2/config/generate-template.ts
 
 ## ParallelCluster クラスターの作成
-### colabfold の場合
-pcluster create-cluster --cluster-name hpccluster --cluster-configuration provisioning/hpc/colabfold/config/config.yml
-### alphafold2 の場合
 pcluster create-cluster --cluster-name hpccluster --cluster-configuration provisioning/hpc/alphafold2/config/config.yml
 ```
+
+<details>
+<summary>ColabFold の場合</summary>
+<pre>
+npx ts-node provisioning/hpc/colabfold/config/generate-template.ts
+</pre>
+<pre>
+pcluster create-cluster --cluster-name hpccluster --cluster-configuration provisioning/hpc/colabfold/config/config.yml
+</pre>
+</details>
 
 - クラスターの作成状況は下記コマンドから確認できます
 
 ```sh
 pcluster list-clusters
 ```
-```
+
+```json
 Output:
 {
   "clusters": [
@@ -135,8 +161,17 @@ pcluster describe-cluster -n hpccluster | grep -A 5 headNode | grep instanceId
 - `provisioning/bin/provisioning.ts` にある `ssmInstanceId` の値を上記インスタンス ID に修正
 
 ```diff
--  ssmInstanceId: 'your-headnode-instanceid',
-+  ssmInstanceId: 'i-{任意のID}',
+-const ssmInstanceId = 'your-headnode-instanceid'
++const ssmInstanceId = 'i-{任意のID}'
+```
+
+- `provisioning/bin/provisioning.ts` にある `allowIp4Ranges` `allowIp6Ranges` の値を、フロントエンドへの接続を許可する IP アドレスレンジに修正
+
+```diff
+-const allowIp4Ranges = ['your-global-ip-v4']
+-const allowIp6Ranges = ['your-global-ip-v6']
++const allowIp4Ranges = ['xx.xx.xx.xx/xx']
++const allowIp6Ranges = []
 ```
 
 - 修正後、フロントエンドをデプロイ
@@ -157,30 +192,33 @@ export AWS_DEFAULT_REGION=us-east-1
 pcluster ssh --cluster-name hpccluster -i ~/.ssh/keypair-alphafold2.pem
 ```
 
-- HeadNode にログインして、ColabFold もしくは AlphaFold2 をインストール
-  - ColabFold と AlphaFold2 の両方のコマンドの記載がありますが、ご利用になる方どちらかを選んで実行してください。
+- HeadNode にログインして、AlphaFold2 をインストール
 
 ```sh
-## HeadNode にログイン後、ColabFold をインストール
-### ColabFold の場合
-bash /fsx/colabfold/scripts/bin/app_install.sh
-### AlphaFold2 の場合
 bash /fsx/alphafold2/scripts/bin/app_install.sh
+```
 
-## データベースの作成
-### ColabFold の場合
-sbatch /fsx/colabfold/scripts/setupDatabase.bth
-### AlphaFold2 の場合
+- HeadNode にログインし直して、環境変数がセットされるようにします。
+
+```sh
 bash /fsx/alphafold2/scripts/bin/setup_database.sh
 ```
+
+<details>
+<summary>ColabFold の場合</summary>
+<pre>
+bash /fsx/colabfold/scripts/bin/app_install.sh
+sbatch /fsx/colabfold/scripts/setupDatabase.bth
+</pre>
+</details>
 
 ### 5. バックエンドの動作確認
 
 - ParallelCluster の HeadNode から下記コマンドでジョブを投入
 
 ```
-wget -q -P /fsx/colabfold/job/input/ https://rest.uniprot.org/uniprotkb/Q5VSL9.fasta
-python3 /fsx/colabfold/scripts/job_create.py Q5VSL9.fasta
+wget -q -P /fsx/alphafold2/job/input/ https://rest.uniprot.org/uniprotkb/Q5VSL9.fasta
+python3 /fsx/alphafold2/scripts/job_create.py Q5VSL9.fasta
 ```
 
 ```sh
@@ -198,8 +236,8 @@ squeue
 
 ### 6. フロントエンドの動作確認
 
-- 手順3 で取得したフロントエンドの URL に、ブラウザから接続します。
+- フロントエンドでは AlphaFold2 と ColabFold の二種類の画面が表示されますが、実際に動作する画面はどちらか片方のみです。フロントエンド構築時に指定した HeadNode が AlphaFold2 だった場合は AlphaFold2 の画面のみ、ColabFold だった場合は ColabFold の画面のみが動作します。
+- 手順 3 で取得したフロントエンドの URL に、ブラウザから接続します。
   - もし URL を忘れてしまった場合は、[AWS Cloudformation のコンソール](https://us-east-1.console.aws.amazon.com/cloudformation) の`FrontendStack` の `出力` タブを見ると、`CloudFrontWebDistributionEndpoint` の値に記載されています。
   - 値は `xxxyyyzzz.cloudfront.net` のような形式です。
 - フロントエンドの画面か、ジョブの投入・ジョブ一覧の表示・ジョブの中止・ジョブの結果表示が行えます。
-

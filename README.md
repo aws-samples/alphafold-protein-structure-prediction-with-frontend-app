@@ -8,6 +8,8 @@ AlphaFold2 Webapp on AWS provides a web frontend that allows users to run AlphaF
 
 <img src="doc/architecture.png" width=500>
 
+**NOTE:** On the frontend, there are two tabs, AlphaFold2 and ColabFold, each with a corresponding page. However, only one of them will actually work. If the HeadNode specified during frontend setup was AlphaFold2, only the AlphaFold2 page will work, and if it was ColabFold, only the ColabFold page will work.
+
 ## Prerequisites for development environment
 
 **NOTE**: We recommend that you follow the steps in the next section to set up your development environment.
@@ -28,13 +30,32 @@ AlphaFold2 Webapp on AWS provides a web frontend that allows users to run AlphaF
 ```sh
 git clone https://github.com/aws-samples/cloud9-setup-for-prototyping
 cd cloud9-setup-for-prototyping
-## Launch Cloud9 environment "cloud9-for-prototyping"
+```
+
+2. To assign an Elastic IP to Cloud9, edit the `params.json` file by `vim params.json` and change the `attach_eip` option to `true`.
+
+```diff
+  "volume_size": 128,
+- "attach_eip": false
++ "attach_eip": true
+}
+```
+
+3. Launch Cloud9 environment `cloud9-for-prototyping`
+
+```sh
 ./bin/bootstrap
 ```
 
-1. Open the [AWS Cloud9 console](https://console.aws.amazon.com/cloud9/), and open an environment named `cloud9-for-prototyping`.
-1. On the menu bar at the top of the AWS Cloud9 IDE, choose `Window` > `New Terminal` or use an existing terminal window.
-1. In the terminal window, enter the following.
+**NOTE:** After the completion of the bootstrap process, the Elastic IP assigned to Cloud9 will be displayed on the screen. Copy this IP to keep it for future reference.
+
+```
+Elastic IP: 127.0.0.1 (example)
+```
+
+4. Open the [AWS Cloud9 console](https://console.aws.amazon.com/cloud9/), and open an environment named `cloud9-for-prototyping`.
+5. On the menu bar at the top of the AWS Cloud9 IDE, choose `Window` > `New Terminal` or use an existing terminal window.
+6. In the terminal window, enter the following.
 
 ```sh
 git clone https://github.com/aws-samples/alphafold-protein-structure-prediction-with-frontend-app.git
@@ -55,6 +76,7 @@ cd alphafold-protein-structure-prediction-with-frontend-app/
 ### 1. Backend
 
 - Before deploying backend CDK stack, you need to build frontend CDK stack. In the terminal window of Cloud9 IDE, enter the following.
+
 ```sh
 ## Build the frontend CDK stack
 cd app
@@ -62,19 +84,20 @@ npm install
 npm run build
 ```
 
-- In `provisioning/bin/provisioning.ts`, modify  the value of `c9Eip` to Cloud9 public IP address. 
+- Modify the value of `c9Eip` in `provisioning/bin/provisioning.ts` to the Elastic IP address assigned to Cloud9 using the above steps.
 
 ```diff
--  c9Eip: 'your-cloud9-ip'
-+  c9Eip: 'xx.xx.xx.xx'
+-const c9Eip = 'your-cloud9-ip'
++const c9Eip = 'xx.xx.xx.xx'
 ```
 
 - After the modification, deploy backend CDK stack.
+
 ```sh
 cd ../provisioning
 npm install
 npx cdk bootstrap
-## Set up the network, database, and storage 
+## Set up the network, database, and storage
 npx cdk deploy Alphafold2ServiceStack --require-approval never
 cd ../
 ```
@@ -92,7 +115,7 @@ Alphafold2ServiceStack.GetSSHKeyCommand = aws ssm get-parameter --name /ec2/keyp
 ...
 ```
 
-- From the outputs above, copy the value of Alphafold2ServiceStack.GetSSHKeyCommand `aws ssm get-parameter ...` and enter it to Cloud9 terminal. 
+- From the outputs above, copy the value of Alphafold2ServiceStack.GetSSHKeyCommand `aws ssm get-parameter ...` and enter it to Cloud9 terminal.
   - This command fetches the private key and saves it to Cloud9.
 
 ```sh
@@ -104,10 +127,8 @@ chmod 600 ~/.ssh/keypair-alphafold2.pem
 ### 2. Set up a cluster managed by AWS ParallelCluster
 
 - Now that the backend has been built, the next step is to create clusters for protein structure prediction.
-- In the Cloud9 IDE terminal, enter the following. 
-- You can modify config.yml to change instance type which is appropriate to your workload. 
-
-**NOTE**: The following includes commands for both AlphaFold2 and ColabFold. Choose one that you prefer.
+- In the Cloud9 IDE terminal, enter the following.
+- You can modify `config.yml` to change instance type which is appropriate to your workload.
 
 ```sh
 ## Install AWS ParallelCluster CLI
@@ -116,17 +137,21 @@ pip3 install aws-parallelcluster==3.3.0 --user
 export AWS_DEFAULT_REGION=us-east-1
 
 ## Generate a configuration file for a ParallelCluster cluster
-### For ColabFold 
-npx ts-node provisioning/hpc/colabfold/config/generate-template.ts
-### For AlphaFold2
 npx ts-node provisioning/hpc/alphafold2/config/generate-template.ts
 
 ## Create a ParallelCluster cluster
-### For ColabFold
-pcluster create-cluster --cluster-name hpccluster --cluster-configuration provisioning/hpc/colabfold/config/config.yml
-### For AlphaFold2
 pcluster create-cluster --cluster-name hpccluster --cluster-configuration provisioning/hpc/alphafold2/config/config.yml
 ```
+
+<details>
+<summary>For ColabFold</summary>
+<pre>
+npx ts-node provisioning/hpc/colabfold/config/generate-template.ts
+</pre>
+<pre>
+pcluster create-cluster --cluster-name hpccluster --cluster-configuration provisioning/hpc/colabfold/config/config.yml
+</pre>
+</details>
 
 - You can check the cluster creation status using the following command.
 
@@ -134,8 +159,8 @@ pcluster create-cluster --cluster-name hpccluster --cluster-configuration provis
 pcluster list-clusters
 ```
 
-```
-Output: 
+```json
+Output:
 {
   "clusters": [
     {
@@ -154,16 +179,26 @@ Output:
 ## Get the instance ID of the cluster's HeadNode
 pcluster describe-cluster -n hpccluster | grep -A 5 headNode | grep instanceId
 ```
+
 ```
 Output:
-"instanceId": "i-{your instance ID}",
+"instanceId": "i-{your_headnode_instanceid}",
 ```
 
-- In `provisioning/bin/provisioning.ts`, modify  the value of `ssmInstanceId` to what we have just fetched in the previous step.
+- In `provisioning/bin/provisioning.ts`, modify the value of `ssmInstanceId` to what we have just fetched in the previous step.
 
 ```diff
--  ssmInstanceId: 'your-headnode-instanceid',
-+  ssmInstanceId: 'i-{your instance ID}',
+-const ssmInstanceId = 'your-headnode-instanceid'
++const ssmInstanceId = 'i-{your_headnode_instanceid}'
+```
+
+- In `provisioning/bin/provisioning.ts`, modify the value of `allowIp4Ranges` and `allowIp6Ranges` to the IP address ranges that are allowed to connect to the frontend.
+
+```diff
+-const allowIp4Ranges = ['your-global-ip-v4']
+-const allowIp6Ranges = ['your-global-ip-v6']
++const allowIp4Ranges = ['xx.xx.xx.xx/xx']
++const allowIp6Ranges = []
 ```
 
 - After the modification, deploy the frontend CDK stack.
@@ -193,27 +228,26 @@ export AWS_DEFAULT_REGION=us-east-1
 pcluster ssh --cluster-name hpccluster -i ~/.ssh/keypair-alphafold2.pem
 ```
 
-- Once you logged into the headnode of the ParallelCluster cluster, install the software of your preference (ColabFold or AlphaFold2).
-
-**NOTE**: The following commands include both for ColabFold and AlphaFold2. Choose the one you prefer.
+- Once you logged into the headnode of the ParallelCluster cluster, install the AlphaFold2.
 
 ```sh
-## Install the software of your choice
-### For ColabFold
-bash /fsx/colabfold/scripts/bin/app_install.sh
-### For AlphaFold2
 bash /fsx/alphafold2/scripts/bin/app_install.sh
 ```
 
-- Create a database for ColabFold or AlphaFold2. Both cases take several hours to complete. Once you started the job, it is safe to close the terminal.
+- Logout and login again to headnode to set environment variables.
+- Create a database for AlphaFold2. This process may take several hours to complete. Once you have started the job, it is safe to close the terminal.
 
 ```sh
-## Create database for the software of your choice
-### For ColabFold
-sbatch /fsx/colabfold/scripts/setupDatabase.bth
-### For AlphaFold2
 bash /fsx/alphafold2/scripts/bin/setup_database.sh
 ```
+
+<details>
+<summary>For ColabFold</summary>
+<pre>
+bash /fsx/colabfold/scripts/bin/app_install.sh
+sbatch /fsx/colabfold/scripts/setupDatabase.bth
+</pre>
+</details>
 
 ### 5. Check if the backend works
 
@@ -221,13 +255,13 @@ bash /fsx/alphafold2/scripts/bin/setup_database.sh
 
 ```sh
 ## Fetch the FASTA file of your choice (e.g. Q5VSL9)
-wget -q -P /fsx/colabfold/job/input/ https://rest.uniprot.org/uniprotkb/Q5VSL9.fasta
+wget -q -P /fsx/alphafold2/job/input/ https://rest.uniprot.org/uniprotkb/Q5VSL9.fasta
 
 ## Start the job using CLI
-### For ColabFold
-python3 /fsx/colabfold/scripts/job_create.py Q5VSL9.fasta
 ### For AlphaFold2
 python3 /fsx/alphafold2/scripts/job_create.py Q5VSL9.fasta
+### For ColabFold
+python3 /fsx/colabfold/scripts/job_create.py Q5VSL9.fasta
 ```
 
 - Check the job status with the following command.
@@ -235,8 +269,9 @@ python3 /fsx/alphafold2/scripts/job_create.py Q5VSL9.fasta
 ```sh
 squeue
 ```
+
 ```
-Output: 
+Output:
 ## While running a job
              JOBID PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
                  1 queue-cpu setupDat   ubuntu CF       0:03      1 queue-cpu-dy-x2iedn16xlarge-1
@@ -257,20 +292,21 @@ Output:
 - When you are done trying out this sample, remove the resource to avoid incurring additional costs.
 
 - First, delete your ParallelCluster cluster.
-  ```sh
-  ## Get the ParallelCluster cluster name, then delete the cluster.
-  pcluster list-clusters | grep clusterName 
-  pcluster delete-cluster -n {your cluster name}
-  ```
+
+```sh
+## Get the ParallelCluster cluster name, then delete the cluster.
+pcluster list-clusters | grep clusterName 
+pcluster delete-cluster -n {your cluster name}
+```
 
 - Delete the CDK stacks.
-  ```sh
-  ## Check the name of the CDK stacks and destroy them
-  cd ~/environment/alphafold-protein-structure-prediction-with-frontend-app/provisioning
-  cdk list
-  cdk destroy FrontendStack
-  cdk destroy Alphafold2ServiceStack
-  ```
+
+```sh
+## Check the name of the CDK stacks and destroy them
+cd ~/environment/alphafold-protein-structure-prediction-with-frontend-app/provisioning
+cdk list
+cdk destroy FrontendStack
+cdk destroy Alphafold2ServiceStack
+```
 
 - If you used Cloud9 for deploying this sample, remove the Cloud9 environment.
-  
