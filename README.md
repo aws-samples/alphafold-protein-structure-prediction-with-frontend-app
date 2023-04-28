@@ -322,11 +322,15 @@ When you are done trying out this sample, remove the resource to avoid incurring
 - First, delete your ParallelCluster cluster.
 
 ```sh
-## Get the ParallelCluster cluster name
-pcluster list-clusters | grep clusterName
-## Delete the dataset files and the cluster
+## Delete the dataset files from HeadNode
+export AWS_DEFAULT_REGION=us-east-1
+pcluster ssh --cluster-name hpccluster -i ~/.ssh/keypair-alphafold2.pem
 rm -fr /fsx/alphafold2/database/
-pcluster delete-cluster -n {your cluster name}
+logout
+
+## Delete the cluster
+export AWS_DEFAULT_REGION=us-east-1
+pcluster delete-cluster -n hpccluster
 ```
 
 - Delete the CDK stacks.
