@@ -30,10 +30,12 @@ else:
             record = records.split()
 
             # JST に変換
-            start_time_JST = datetime.datetime.fromisoformat(record[1]).astimezone(
-                datetime.timezone(datetime.timedelta(hours=+9))
-            )
-            record[1] = int(start_time_JST.timestamp())
+            # Status によっては starttime が "None" になる
+            if record[1] != "None":
+                start_time_JST = datetime.datetime.fromisoformat(record[1]).astimezone(
+                    datetime.timezone(datetime.timedelta(hours=+9))
+                )
+                record[1] = int(start_time_JST.timestamp())
 
             # Status によっては endtime が "Unknown" になる
             if record[2] != "Unknown":
