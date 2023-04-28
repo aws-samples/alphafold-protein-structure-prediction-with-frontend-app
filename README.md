@@ -256,10 +256,10 @@ export AWS_DEFAULT_REGION=us-east-1
 pcluster ssh --cluster-name hpccluster -i ~/.ssh/keypair-alphafold2.pem
 ```
 
-- Before submitting a job to backend, make sure the downloading datasets is completed.
+- Before testing the backend, make sure downloading datasets is completed.
 
 ``` sh
-tail /fsx/alphafold2/job/log/setup_database.out -n 10
+tail /fsx/alphafold2/job/log/setup_database.out -n 8
 ```
 
 ```
@@ -319,7 +319,7 @@ Output:
 
 When you are done trying out this sample, remove the resource to avoid incurring additional costs. Run the following commands from the Cloud9 terminal.
 
-- First, delete your ParallelCluster cluster
+- First, delete your ParallelCluster cluster.
 
 ```sh
 ## Get the ParallelCluster cluster name
@@ -329,7 +329,7 @@ rm -fr /fsx/alphafold2/database/
 pcluster delete-cluster -n {your cluster name}
 ```
 
-- Delete the CDK stacks
+- Delete the CDK stacks.
 
 ```sh
 ## Check the name of the CDK stacks (for frontend and backend) and destroy them
@@ -340,4 +340,4 @@ npx cdk destroy GlobalStack
 npx cdk destroy Alphafold2ServiceStack
 ```
 
-- Lastly, Remove the Cloud9 development environment
+- Lastly, Remove the Cloud9 development environment from the AWS Management Console.

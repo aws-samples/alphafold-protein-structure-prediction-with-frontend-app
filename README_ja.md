@@ -64,6 +64,7 @@ Admin:~/environment $ cd your_samples/
 ## デプロイ手順
 
 **NOTE**: 以降の手順では `us-east-1` (N. Virginia) リージョンを使用します。
+
 **NOTE:** 以降の手順は、上記 Cloud9 環境からの作業を推奨します
 
 ### 1. バックエンドの構築
@@ -224,7 +225,7 @@ pcluster ssh --cluster-name hpccluster -i ~/.ssh/keypair-alphafold2.pem
 - バックエンドの動作確認をする前に、AlphaFold2 用のデータベースがセットアップ完了しているかを確認します
 
 ``` sh
-tail /fsx/alphafold2/job/log/setup_database.out -n 10
+tail /fsx/alphafold2/job/log/setup_database.out -n 8
 ```
 
 ```
@@ -292,4 +293,4 @@ npx cdk destroy GlobalStack
 npx cdk destroy Alphafold2ServiceStack
 ```
 
-- 最後に、開発環境である Cloud9 環境を削除してください
+- 最後に、マネジメントコンソールから、Cloud9 環境を削除してください
