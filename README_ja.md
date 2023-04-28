@@ -177,7 +177,7 @@ pcluster describe-cluster -n hpccluster | grep -A 5 headNode | grep instanceId
 
 ```sh
 ## フロントエンドのデプロイ
-cd provisioning
+cd ~/environment/alphafold-protein-structure-prediction-with-frontend-app/provisioning
 npx cdk deploy FrontendStack --require-approval never
 ```
 
@@ -197,10 +197,10 @@ pcluster ssh --cluster-name hpccluster -i ~/.ssh/keypair-alphafold2.pem
 bash /fsx/alphafold2/scripts/bin/app_install.sh
 ```
 
-- HeadNode にログインし直して、環境変数がセットされるようにします。
+- AlphaFold2 に必要なデータベースをダウンロードします。これには 12時間ほどかかります。実行を開始したら、Cloud9 の画面を閉じても構いません。
 
 ```sh
-bash /fsx/alphafold2/scripts/bin/setup_database.sh
+nohup bash /fsx/alphafold2/scripts/bin/setup_database.sh &
 ```
 
 <details>
@@ -213,9 +213,35 @@ sbatch /fsx/colabfold/scripts/setupDatabase.bth
 
 ### 5. バックエンドの動作確認
 
-- ParallelCluster の HeadNode から下記コマンドでジョブを投入
+- ParallelCluster の HeadNode からログアウトしてしまった場合は、再度ログインします
+
+```sh
+## SSH login to ParallelCluster's HeadNode using private key
+export AWS_DEFAULT_REGION=us-east-1
+pcluster ssh --cluster-name hpccluster -i ~/.ssh/keypair-alphafold2.pem
+```
+
+- バックエンドの動作確認をする前に、AlphaFold2 用のデータベースがセットアップ完了しているかを確認します
+
+``` sh
+tail /fsx/alphafold2/job/log/setup_database.out -n 10
+```
 
 ```
+Output:
+Download Results:
+gid   |stat|avg speed  |path/URI
+======+====+===========+=======================================================
+dcfd44|OK  |    66MiB/s|/fsx/alphafold2/database/pdb_seqres/pdb_seqres.txt
+
+Status Legend:
+(OK):download completed.
+All data downloaded.
+```
+
+- ParallelCluster の HeadNode から下記コマンドでジョブを投入します
+
+```sh
 wget -q -P /fsx/alphafold2/job/input/ https://rest.uniprot.org/uniprotkb/Q5VSL9.fasta
 python3 /fsx/alphafold2/scripts/job_create.py Q5VSL9.fasta
 ```
@@ -248,19 +274,22 @@ squeue
 - まず、ParallelCluster のクラスターを削除します
 
 ```sh
-## ParallelCluster のクラスター名の一覧を確認した上で、クラスターを削除
+## ParallelCluster のクラスター名の一覧を確認
 pcluster list-clusters | grep clusterName
+## データベースファイルを削除の上で、クラスターを削除
+rm -fr /fsx/alphafold2/database/
 pcluster delete-cluster -n {your cluster name}
 ```
 
 - CDK スタックを削除します
 
 ```sh
-## CDK スタック（フロントエンド・バックエンド）の名称を確認の上、それぞれ削除
+## CDK スタックの名称を確認の上、それぞれ削除
 cd ~/environment/alphafold-protein-structure-prediction-with-frontend-app/provisioning
-cdk list
-cdk destroy FrontendStack
-cdk destroy Alphafold2ServiceStack
+npx cdk list
+npx cdk destroy FrontendStack
+npx cdk destroy GlobalStack
+npx cdk destroy Alphafold2ServiceStack
 ```
 
 - 最後に、開発環境である Cloud9 環境を削除してください
