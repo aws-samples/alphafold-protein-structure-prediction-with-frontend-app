@@ -275,11 +275,15 @@ squeue
 - まず、ParallelCluster のクラスターを削除します
 
 ```sh
-## ParallelCluster のクラスター名の一覧を確認
-pcluster list-clusters | grep clusterName
-## データベースファイルを削除の上で、クラスターを削除
+## HeadNode からデータベースファイルを削除
+export AWS_DEFAULT_REGION=us-east-1
+pcluster ssh --cluster-name hpccluster -i ~/.ssh/keypair-alphafold2.pem
 rm -fr /fsx/alphafold2/database/
-pcluster delete-cluster -n {your cluster name}
+logout
+
+## クラスターを削除
+export AWS_DEFAULT_REGION=us-east-1
+pcluster delete-cluster -n hpccluster
 ```
 
 - CDK スタックを削除します
@@ -293,4 +297,4 @@ npx cdk destroy GlobalStack
 npx cdk destroy Alphafold2ServiceStack
 ```
 
-- 最後に、マネジメントコンソールから、Cloud9 環境を削除してください
+- 最後に、マネジメントコンソールから、Cloud9 環境と Cloud9 に割り当てた Elastic IP を削除してください
