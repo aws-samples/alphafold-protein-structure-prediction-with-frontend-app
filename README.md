@@ -203,7 +203,7 @@ Output:
 
 ```sh
 ## Deploy the frontend CDK stack
-cd provisioning
+cd ~/environment/alphafold-protein-structure-prediction-with-frontend-app/provisioning
 npx cdk deploy FrontendStack --require-approval never
 ```
 
@@ -232,11 +232,10 @@ pcluster ssh --cluster-name hpccluster -i ~/.ssh/keypair-alphafold2.pem
 bash /fsx/alphafold2/scripts/bin/app_install.sh
 ```
 
-- Logout and login again to headnode to set environment variables.
-- Create a database for AlphaFold2. This process may take several hours to complete. Once you have started the job, it is safe to close the terminal.
+- Create a database for AlphaFold2. This process may take about 12 hours to complete. Once you have started the job, it is safe to close the terminal.
 
 ```sh
-bash /fsx/alphafold2/scripts/bin/setup_database.sh
+nohup bash /fsx/alphafold2/scripts/bin/setup_database.sh &
 ```
 
 <details>
@@ -248,6 +247,32 @@ sbatch /fsx/colabfold/scripts/setupDatabase.bth
 </details>
 
 ### 5. Check if the backend works
+
+- If you are logged out of the ParallelCluster's HeadNode, log in again.
+
+```sh
+## SSH login to ParallelCluster's HeadNode using private key
+export AWS_DEFAULT_REGION=us-east-1
+pcluster ssh --cluster-name hpccluster -i ~/.ssh/keypair-alphafold2.pem
+```
+
+- Before testing the backend, make sure downloading datasets is completed.
+
+``` sh
+tail /fsx/alphafold2/job/log/setup_database.out -n 8
+```
+
+```
+Output:
+Download Results:
+gid   |stat|avg speed  |path/URI
+======+====+===========+=======================================================
+dcfd44|OK  |    66MiB/s|/fsx/alphafold2/database/pdb_seqres/pdb_seqres.txt
+
+Status Legend:
+(OK):download completed.
+All data downloaded.
+```
 
 - Submit jobs from ParallelCluster's HeadNode with the following commands
 
@@ -292,24 +317,27 @@ Output:
 
 ### 7. Clean up
 
-- When you are done trying out this sample, remove the resource to avoid incurring additional costs.
+When you are done trying out this sample, remove the resource to avoid incurring additional costs. Run the following commands from the Cloud9 terminal.
 
 - First, delete your ParallelCluster cluster.
 
 ```sh
-## Get the ParallelCluster cluster name, then delete the cluster.
-pcluster list-clusters | grep clusterName 
+## Get the ParallelCluster cluster name
+pcluster list-clusters | grep clusterName
+## Delete the dataset files and the cluster
+rm -fr /fsx/alphafold2/database/
 pcluster delete-cluster -n {your cluster name}
 ```
 
 - Delete the CDK stacks.
 
 ```sh
-## Check the name of the CDK stacks and destroy them
+## Check the name of the CDK stacks (for frontend and backend) and destroy them
 cd ~/environment/alphafold-protein-structure-prediction-with-frontend-app/provisioning
-cdk list
-cdk destroy FrontendStack
-cdk destroy Alphafold2ServiceStack
+npx cdk list
+npx cdk destroy FrontendStack
+npx cdk destroy GlobalStack
+npx cdk destroy Alphafold2ServiceStack
 ```
 
-- If you used Cloud9 for deploying this sample, remove the Cloud9 environment.
+- Lastly, Remove the Cloud9 development environment from the AWS Management Console.
