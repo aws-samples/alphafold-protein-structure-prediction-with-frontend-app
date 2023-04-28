@@ -344,4 +344,4 @@ npx cdk destroy GlobalStack
 npx cdk destroy Alphafold2ServiceStack
 ```
 
-- Lastly, Remove the Cloud9 development environment from the AWS Management Console.
+- Lastly, Remove the Cloud9 development environment and Elastic IP attached Cloud9 from the AWS Management Console. 
