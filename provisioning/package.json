@@ -4,7 +4,7 @@
     "@aws-cdk/aws-lambda-python-alpha": "^2.50.0-alpha.0",
     "@types/node": "^18.11.0",
     "aws-cdk": "^2.46.0",
-    "aws-cdk-lib": "^2.46.0",
+    "aws-cdk-lib": "^2.80.0",
     "aws-sdk": "^2.1354.0",
     "cdk-remote-stack": "^2.0.10",
     "constructs": "^10.1.131",
