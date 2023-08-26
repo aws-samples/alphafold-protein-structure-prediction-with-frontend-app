@@ -14,15 +14,15 @@ mkdir -p $OUTPUT_PATH
 mkdir -p $INPUT_PATH_COPIED
 sudo cp ${INPUT_PATH}$1 ${INPUT_PATH_COPIED}
 
-# prerequisites for AlphaFold 2
+# the following is based on https://github.com/deepmind/alphafold/blob/main/README.md
 python3 --version # make sure the version matches the pip version
-pip3 install -r ${AF_PATH}requirements.txt --user
+pip3 install -r ${AF_PATH}docker/requirements.txt --user
 
 # build AlphaFold2 docker image locally
 sudo docker build -f ${AF_PATH}docker/Dockerfile -t alphafold ${AF_PATH}
 
-# AlphaFold2 run_docker.py を実行
-# $1: FASTAファイルへのフルパス
+# pass the input FASTA file to the docker container
+# $1: full path for input FASTA file
 python3 ${AF_PATH}docker/run_docker.py \
         --fasta_paths=${INPUT_PATH}$1 \
         --max_template_date=$TEMPLATE_DATE \
