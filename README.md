@@ -8,7 +8,7 @@ AlphaFold2 Webapp on AWS provides a web frontend that allows users to run AlphaF
 
 <img src="doc/architecture.png" width=500>
 
-**NOTE:** On the frontend, there are two tabs, AlphaFold2 and ColabFold, each with a corresponding page. However, only one of them will actually work. If the HeadNode specified during frontend setup was AlphaFold2, only the AlphaFold2 page will work, and if it was ColabFold, only the ColabFold page will work.
+**NOTE**: On the frontend, there are two tabs, AlphaFold2 and ColabFold, each with a corresponding page. However, only one of them will actually work. If the HeadNode specified during frontend setup was AlphaFold2, only the AlphaFold2 page will work, and if it was ColabFold, only the ColabFold page will work.
 
 ## Prerequisites for development environment
 

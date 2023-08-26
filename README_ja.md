@@ -8,7 +8,7 @@ AlphaFold2 Webapp on AWS は、ユーザが GUI で AlphaFold2 または ColabFo
 
 <img src="doc/architecture.png" width=500>
 
-**NOTE:** フロントエンドには、AlphaFold2とColabFoldという2つのタブがあり、それぞれに対応するページがあります。しかし、実際にはユーザがどちらか一方を選んで構築し利用することになります。フロントエンドのセットアップ時に HeadNode で AlphaFold2 を指定して構築した場合、AlphaFold2 のページのみが機能し、ColabFold の場合、ColabFold のページのみが機能します。
+**NOTE**: フロントエンドには、AlphaFold2 と ColabFold という2つのタブがあり、それぞれに対応するページがあります。しかし、実際にはどちらか一方を選んで構築し利用することになります。フロントエンドのセットアップ時に HeadNode で AlphaFold2 を指定して構築した場合、AlphaFold2 のページのみが機能し、ColabFold の場合、ColabFold のページのみが機能します。
 
 ## 開発環境の前提条件
 
