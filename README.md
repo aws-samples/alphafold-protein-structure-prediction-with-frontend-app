@@ -2,13 +2,13 @@
 
 View this page in [Japanese(日本語)](README_ja.md)
 
-AlphaFold2 Webapp on AWS provides a web frontend that allows users to run AlphaFold2 or ColabFold using GUI. In addition, administrators can easily build an AlphaFold2 or ColabFold analysis environment with AWS CDK.
+AlphaFold2 Webapp on AWS provides a web frontend that allows users to run AlphaFold2 or ColabFold using GUI. In addition, administrators can easily build an AlphaFold2 or ColabFold analysis environment with AWS CDK. For more information, please refer to [an AWS HPC blog post: "Running protein structure prediction at scale using a web interface for researchers"](https://aws.amazon.com/blogs/hpc/running-protein-structure-prediction-at-scale-using-a-web-interface-for-researchers/).
 
 <img src="doc/webui.png" width=500>
 
 <img src="doc/architecture.png" width=500>
 
-**NOTE:** On the frontend, there are two tabs, AlphaFold2 and ColabFold, each with a corresponding page. However, only one of them will actually work. If the HeadNode specified during frontend setup was AlphaFold2, only the AlphaFold2 page will work, and if it was ColabFold, only the ColabFold page will work.
+**NOTE**: On the frontend, there are two tabs, AlphaFold2 and ColabFold, each with a corresponding page. However, only one of them will actually work. If the HeadNode specified during frontend setup was AlphaFold2, only the AlphaFold2 page will work, and if it was ColabFold, only the ColabFold page will work.
 
 ## Prerequisites for development environment
 

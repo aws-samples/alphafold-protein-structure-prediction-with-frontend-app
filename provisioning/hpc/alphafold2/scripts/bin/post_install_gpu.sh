@@ -1,8 +1,8 @@
 #!/bin/bash
 
 ##########
-# SlurmのHead Nodeプロビジョニング後に実行されるスクリプト
-# 参考：https://github.com/aws-samples/aws-research-workshops/blob/mainline/notebooks/parallelcluster/scripts/pcluster_post_install_fast.sh
+# Post-install script for AWS ParallelCluster compute node (GPU queues)
+# Based on https://github.com/aws-samples/aws-research-workshops/blob/mainline/notebooks/parallelcluster/scripts/pcluster_post_install_fast.sh
 ##########
 
 echo "start running post process..."

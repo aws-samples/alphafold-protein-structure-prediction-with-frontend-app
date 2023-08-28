@@ -2,11 +2,13 @@
 
 View this page in [English](README.md)
 
-AlphaFold2 Webapp on AWS は、ユーザが GUI で AlphaFold2 または ColabFold を実行できるウェブアプリケーション環境を提供します。管理者は AlphaFold2 や ColabFold の解析環境を AWS CDK を用いて簡単に構築することができます。
+AlphaFold2 Webapp on AWS は、ユーザが GUI で AlphaFold2 または ColabFold を実行できるウェブアプリケーション環境を提供します。管理者は AlphaFold2 や ColabFold の解析環境を AWS CDK を用いて簡単に構築することができます。このアプリケーションについてのより詳細な情報については、[AWS ブログ記事「大規模なタンパク質構造予測を行うための研究者向けウェブアプリを構築するには」](https://aws.amazon.com/jp/blogs/news/running-protein-structure-prediction-at-scale-using-web-interface-for-researchers/) をご覧ください。
 
 <img src="doc/webui.png" width=500>
 
 <img src="doc/architecture.png" width=500>
+
+**NOTE**: フロントエンドには、AlphaFold2 と ColabFold という2つのタブがあり、それぞれに対応するページがあります。しかし、実際にはどちらか一方を選んで構築し利用することになります。フロントエンドのセットアップ時に HeadNode で AlphaFold2 を指定して構築した場合、AlphaFold2 のページのみが機能し、ColabFold の場合、ColabFold のページのみが機能します。
 
 ## 開発環境の前提条件
 
