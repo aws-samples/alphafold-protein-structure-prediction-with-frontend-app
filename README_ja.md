@@ -115,7 +115,7 @@ chmod 600 ~/.ssh/keypair-alphafold2.pem
 
 ```sh
 ## ParallelCluster コマンドのインストール
-pip3 install aws-parallelcluster==3.3.0 --user
+pip3 install aws-parallelcluster==3.7.2 --user
 
 ## リージョンの設定
 export AWS_DEFAULT_REGION=us-east-1
