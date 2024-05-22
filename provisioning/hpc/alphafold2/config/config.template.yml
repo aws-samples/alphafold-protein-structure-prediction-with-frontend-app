@@ -48,6 +48,10 @@ Scheduling:
           - BucketName: ${BUCKET_NAME}
             EnableWriteAccess: true
     - Name: queue-gpu
+      ComputeSettings:
+        LocalStorage:
+          RootVolume:
+            Size: 50
       ComputeResources:
         - Name: g4dn2xlarge
           Instances:
